@@ -48,19 +48,6 @@ command -v docker-compose >/dev/null 2>&1 || {
     docker-compose --version
     }
 
-
-    command -v certbot >/dev/null 2>&1 || {
-    # Adding certbot repo
-    add-apt-repository ppa:certbot/certbot -y
-
-    # Update apt-get
-    apt-get update
-
-    # Install certbot
-    apt-get install -y certbot python-certbot-apache
-}
-
-service apa
 command -v nginx >/dev/null 2>&1 || {
     # Install Nginx
     apt-get install -y nginx
@@ -105,6 +92,18 @@ EOM
 
 # Reloading Nnginx
 service nginx restart
+
+#certbot setup
+command -v certbot >/dev/null 2>&1 || {
+    # Adding certbot repo
+    add-apt-repository ppa:certbot/certbot -y
+
+    # Update apt-get
+    apt-get update
+
+    # Install certbot
+    apt-get install -y certbot
+}
 
 # Adding SSL
 rm /etc/nginx/certificates/${1}/cert.pem >/dev/null 2>&1
