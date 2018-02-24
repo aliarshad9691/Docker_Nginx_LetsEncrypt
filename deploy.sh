@@ -60,7 +60,7 @@ command -v docker-compose >/dev/null 2>&1 || {
     apt-get install -y certbot python-certbot-apache
 }
 
-
+service apa
 command -v nginx >/dev/null 2>&1 || {
     # Install Nginx
     apt-get install -y nginx
@@ -84,11 +84,6 @@ EOM
     mkdir -p /etc/nginx/certificates/
 
 }
-
-
-
-
-
 
 # creating certbot dir for domain
 mkdir -p /var/www/${1}
