@@ -78,21 +78,6 @@ mkdir -p /var/www/${1}
 # creating certbot dir for domain
 mkdir -p /etc/nginx/certificates/${1}
 
-# Adding domain to nginx
-/bin/cat <<EOM > /etc/nginx/sites-enabled/${1}
-server {
-    listen 80;
-    server_name $1;
-
-    location /.well-known {
-            alias /var/www/$1/.well-known;
-    }
-}
-EOM
-
-# Reloading Nnginx
-service nginx restart
-
 #certbot setup
 command -v certbot >/dev/null 2>&1 || {
     # Adding certbot repo
@@ -102,7 +87,7 @@ command -v certbot >/dev/null 2>&1 || {
     apt-get update
 
     # Install certbot
-    apt-get install -y certbot
+    apt-get install -y certbot python-certbot-nginx
 }
 
 # Adding SSL
@@ -112,7 +97,7 @@ rm -rf /etc/letsencrypt/live/${1} >/dev/null 2>&1
 rm -rf /etc/letsencrypt/renewal/${1}.conf >/dev/null 2>&1
 rm -rf /etc/letsencrypt/archive/${1} >/dev/null 2>&1
 
-certbot certonly --webroot -w /var/www/${1}/ -d ${1} --email ${3} --agree-tos --no-eff-email
+certbot certonly --nginx -d ${1} --email ${3} --agree-tos --no-eff-email
 ln  -s /etc/letsencrypt/live/${1}/fullchain.pem /etc/nginx/certificates/${1}/cert.pem
 ln -s /etc/letsencrypt/live/${1}/privkey.pem /etc/nginx/certificates/${1}/key.pem
 
@@ -159,7 +144,7 @@ server {
         }
         add_header 'Access-Control-Allow-Origin' \$http_origin always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_pass http://localhost:$2/;
     }
